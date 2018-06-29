@@ -37,7 +37,7 @@ Integrates with Plex and Slack
 ## Hardware
 * Raspberry Pi 3 Model B
 * Pi NoIR Camera V2
-* wittyPi Mini for Real Time Clock and power management/scheduling
+* wittyPi Mini (Real Time Clock and power management/scheduling)
 * Adafruit PIR (motion) sensor
 * BW 48 LED Illuminator Light Lamp CCTV IR Infrared Night Vision
 * Naturebytes Cam Case
