@@ -39,7 +39,8 @@ Integrates with Plex and Slack
 * Pi NoIR Camera V2
 * wittyPi Mini for Real Time Clock and power management/scheduling
 * BW 48 LED Illuminator Light Lamp CCTV IR Infrared Night Vision
-* Naturebytes Cam case
+* Naturebytes Cam Case
+* Anker PowerCore II 10000
 
 ## Credits
 Major credits to Chris Johnstone for documenting out how to do the basic setup, from which I have then extended to meet my own needs:
