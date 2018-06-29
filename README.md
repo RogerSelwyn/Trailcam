@@ -46,5 +46,5 @@ Major credits to Chris Johnstone for documenting out how to do the basic setup, 
 * From 2016 - [https://peaknature.co.uk/blog/how-to-build-a-raspberry-pi-trail-cam--part-1-introduction]
 * From 2018 - [https://peaknature.co.uk/blog/how-to-build-a-raspberry-pi-zero-trail-camera--part-1-what-you-need]
 
-Also Naturebytes for their work on developing a full trail camera kit and making the case available as a seperate purchase
+Also Naturebytes for their work on developing a full trail camera kit and making the case available as a seperate purchase:
 * https://shop.naturebytes.org/product/wildlife-cam-case/
