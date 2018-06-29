@@ -1,6 +1,6 @@
 # Trailcam
 
-Trailcam built on Raspberry Pi 3 Model B and Pi NoIR Camera V2.
+Trailcam built on Raspberry Pi 3 Model B and Pi NoIR Camera V2
 
 ## Overview
 
@@ -34,7 +34,17 @@ Integrates with Plex and Slack
 * **Plex** - Uploads video and still to my NAS which my Plex media server is pointing at, then initiates a library refresh for the specific library
 * **Slack** - Posts a notification on motion detected, and the video to my slack channel. Therefore you need 'slackclient' installed ```pip3 install slackclient```
 
+## Hardware
+* Raspberry Pi 3 Model B
+* Pi NoIR Camera V2
+* wittyPi Mini for Real Time Clock and power management/scheduling
+* BW 48 LED Illuminator Light Lamp CCTV IR Infrared Night Vision
+* Naturebytes Cam case
+
 ## Credits
 Major credits to Chris Johnstone for documenting out how to do the basic setup, from which I have then extended to meet my own needs:
 * From 2016 - [https://peaknature.co.uk/blog/how-to-build-a-raspberry-pi-trail-cam--part-1-introduction]
 * From 2018 - [https://peaknature.co.uk/blog/how-to-build-a-raspberry-pi-zero-trail-camera--part-1-what-you-need]
+
+Also Naturebytes for their work on developing a full trail camera kit and making the case available as a seperate purchase
+* https://shop.naturebytes.org/product/wildlife-cam-case/
