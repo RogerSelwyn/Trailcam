@@ -1,0 +1,11 @@
+#Python cache
+__pycache__/
+
+#Config directory
+config/
+
+#Temporary capture directory
+videos/
+
+#Log directory
+trailcam_log/
