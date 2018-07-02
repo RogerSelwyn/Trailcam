@@ -44,6 +44,27 @@ Integrates with Plex and Slack
 * Naturebytes Cam Case
 * Anker PowerCore II 10000
 
+## Bot Control
+botcontrol.py monitors a second slack channel, which allows a limited set of commands to 'stop' and 'start' the main trailcam service from slack, and to 'shutdown' the Pi.
+
+Service for this is:
+
+```
+[Unit]
+Description=Botcontrol
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/python3 /home/pi/Trailcam/botcontrol.py
+User=pi
+Group=pi
+KillSignal=SIGINT
+
+[Install]
+WantedBy=multi-user.target
+```
+
 ## Credits
 Major credits to Chris Johnstone for documenting out how to do the basic setup, from which I have then extended to meet my own needs:
 * From 2016 - [https://peaknature.co.uk/blog/how-to-build-a-raspberry-pi-trail-cam--part-1-introduction]
