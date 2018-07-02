@@ -57,7 +57,7 @@ def takeStill(threadid):
 
 # Tell slack it send a bad message
 def invalidMessage(threadid, message):
-  postSlackMessage(':no_entry: Invalid command - ' + message, threadid, ':ghost:', 'Cam Control')
+  postSlackMessage(':no_entry: Invalid command - ^' + message + '^', threadid, ':ghost:', 'Cam Control')
   return
 
 # Posts the still to slack
