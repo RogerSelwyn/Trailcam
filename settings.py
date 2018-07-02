@@ -7,7 +7,7 @@ def init():
     global stillSeconds
     global remoteHost, remoteShare, remoteSubfolder, remoteUser, remotePassword
     global plexServer, plexLibrary, plexToken
-    global slackToken, slackChannel
+    global slackToken, slackChannel, slackChannel2
 
     # Default record time, if motion is still detected this time is repeated
     recordtime = 10
@@ -61,3 +61,6 @@ def init():
 
     # Slack channel to post to
     slackChannel = config['slackChannel']
+
+    # Slack channel to receive from
+    slackChannel2 = config['slackChannel2']

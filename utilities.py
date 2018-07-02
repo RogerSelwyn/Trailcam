@@ -127,19 +127,21 @@ def updatePlex():
         logMessage('Updated Plex')
     return
 
-def setupSlack():
-    global rog_cam_id, sc
-    rog_cam_id = None
+def setupSlack(inSC):
+    global sc, slackChannel
+    slackChannel = inSC
 
     sc = SlackClient(settings.slackToken)
-    rog_cam_id = sc.api_call("auth.test")["user_id"]
+    sc.api_call("auth.test")["user_id"]
     return
 
-def postSlackMessage(message, threadid = None):
+def postSlackMessage(message, threadid = None, iconemoji = None, user_name = None):
     ret = sc.api_call(
       "chat.postMessage",
-      channel=settings.slackChannel,
+      channel=slackChannel,
       thread_ts=threadid,
+      icon_emoji=iconemoji,
+      username=user_name,
       text=message
     )
     if not 'ok' in ret or not ret['ok']:

@@ -17,7 +17,8 @@ def main():
   if not settings.service and checkService():
       exit()
   setupLog()
-  setupSlack()
+  if not settings.testmode:
+      setupSlack(settings.slackChannel)
   mountShare()
   tidyupTempStore()
   pir = MotionSensor(18)
