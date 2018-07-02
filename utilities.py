@@ -5,6 +5,9 @@ from subprocess import call, Popen
 from slackclient import SlackClient
 import settings
 
+# Mounts share from local SMB location
+# Creates the mount point if needed
+# Then mounts the share to it in RW mode
 def mountShare():
     if not os.path.exists(settings.storePath):
         logMessage('Creating mount point ' + settings.storePath)
@@ -21,6 +24,7 @@ def mountShare():
         Popen(command, shell=True)
     return
 
+# Sets up log file location, and setups the basic config
 def setupLog():
     if not os.path.exists(settings.rootPath + 'trailcam_log'):
         os.makedirs(settings.rootPath + 'trailcam_log')
@@ -34,11 +38,13 @@ def setupLog():
         datefmt='%Y-%m-%d, %H:%M:%S,')
     return
 
+# Logs a message to the log file, and prints it to console
 def logMessage(message):
     logging.info(message)
     print(message)
     return
 
+# Logs an error message, prints it to console and notifies slack if not in test mode
 def logError(message):
     logging.error(message)
     print(message)
@@ -46,12 +52,18 @@ def logError(message):
         postSlackMessage(message)
     return
 
+# Stores the video but initiating the activities in a separate thread
+# so as not to hold up the main thread
 def storeVideo(input_video, output_basefilename):
     thread = threading.Thread(target=threadedStoreVideo, args=(input_video, output_basefilename))
     thread.daemon = True
     thread.start()
     return
 
+# Convert video to MP4 and store in final location
+# Remove capture file
+# Post to slack if not in test mode
+# Tell Plex to update the library
 def threadedStoreVideo(input_video, output_basefilename):
     output_filename = "{}.mp4".format(output_basefilename)
     output_video = findStoreFileName(output_filename)
@@ -63,6 +75,8 @@ def threadedStoreVideo(input_video, output_basefilename):
     updatePlex()
     return
 
+# Store still in final location
+# Remove capture file
 def storeStill(input_still, output_basefilename):
     output_filename = "{}.jpg".format(output_basefilename)
     output_still = findStoreFileName(output_filename)
@@ -71,6 +85,7 @@ def storeStill(input_still, output_basefilename):
     os.remove(input_still)
     return 
 
+# Process command line arguments
 def processArgs():
     argv = sys.argv[1:] 
 
@@ -81,26 +96,31 @@ def processArgs():
         print('trailcam.py -r <recordtime> -t <testmode> -s <service> -p <phototime> ')
         sys.exit(2)
     for opt, arg in opts:
+        # Help
         if opt == '-h':
             print('trailcam.py -r <recordtime> -s <service> -p <phototime>')
             sys.exit()
+        # Set the time for which each recording will last
         elif opt in ("-r", "--recordtime"):
             settings.recordtime = int(arg)
+        # Set if we are testing
         elif opt in ("-t", "--testmode"):
             if arg == 'True':
                 settings.testmode = True
             else:
                 settings.testmode = False
+        # Set if this is being run as a service
         elif opt in ("-s", "--service"):
             if arg == 'True':
                 settings.service = True
             else:
                 settings.service = False
+        # Set the point at which we should take a photo
         elif opt in ("-p", "--phototime"):
             settings.stillSeconds = int(arg)
-
     return
 
+# Figure out where we want to store the output. Preferably on the share we mounted.
 def findStoreFileName(output_filename):
     if os.path.isdir(settings.storePath + settings.remoteSubfolder):
         storePath = settings.storePath + settings.remoteSubfolder + "/"
@@ -117,6 +137,7 @@ def findStoreFileName(output_filename):
     storeFileName = storePath + output_filename
     return storeFileName
 
+# Send REST call to update Plex
 def updatePlex():
     conn =http.client.HTTPConnection(settings.plexServer)
     conn.request("GET", "/library/sections/" + settings.plexLibrary + "/refresh?X-Plex-Token=" + settings.plexToken)
@@ -127,6 +148,7 @@ def updatePlex():
         logMessage('Updated Plex')
     return
 
+# Setup slack communication
 def setupSlack(inSC):
     global sc, slackChannel
     slackChannel = inSC
@@ -135,6 +157,10 @@ def setupSlack(inSC):
     sc.api_call("auth.test")["user_id"]
     return
 
+# Send a slack message
+# - threadid replies previous item
+# - iconemoji overrides the default user icon
+# - user_name overrides the default user name
 def postSlackMessage(message, threadid = None, iconemoji = None, user_name = None):
     ret = sc.api_call(
       "chat.postMessage",
@@ -151,7 +177,7 @@ def postSlackMessage(message, threadid = None, iconemoji = None, user_name = Non
         logMessage('Slack notified - ' + message)
         return ret['message']['ts']
 
-
+# Posts the video to slack
 def postSlackVideo(input_video, input_filename, input_title, input_comment):
   with open(input_video, 'rb') as f:
     ret = sc.api_call(
@@ -167,6 +193,7 @@ def postSlackVideo(input_video, input_filename, input_title, input_comment):
         logMessage('Slack video uploaded - ' + input_filename)
     return
 
+# Check to see if we are running as a service
 def checkService():
     try:
         output = subprocess.check_output(['service', 'trailcam', 'status'])
@@ -176,6 +203,7 @@ def checkService():
         logMessage('Service running - exiting ')
         return True
 
+# Tidy up our capture store
 def tidyupTempStore():
   folder = settings.rootPath + "videos/"
   for the_file in os.listdir(folder):
