@@ -24,6 +24,7 @@ Type=idle
 ExecStart=/usr/bin/python3 /home/pi/Trailcam/trailcam.py -t False -s True > /home/pi/Trailcam/log.txt
 User=pi
 Group=pi
+KillSignal=SIGINT
 
 [Install]
 WantedBy=multi-user.target
