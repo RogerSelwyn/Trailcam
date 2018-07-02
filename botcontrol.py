@@ -6,10 +6,13 @@ from utilities import (
 )
 import utilities
 
+# Process the individual chat message. 
+# If it is a proper message and not the bot replying, then process it 
 def processChat(chat):
   if chat['type'] == 'message' and not chat.get('subtype') == 'bot_message' and not chat.get('subtype') == 'message_replied':
     processMessage(chat['text'], chat['ts'])
 
+# Stop the trailcam service and post a message on outcome to Slack
 def stopService(threadid):
   print('Stopping trailcam service')
   os.system("sudo service trailcam stop")    
@@ -21,6 +24,7 @@ def stopService(threadid):
       postSlackMessage(':no_entry: Service still running', threadid, ':ghost:', 'Cam Control')
   return
 
+# Start the trailcam service and post a message on outcome to Slack
 def startService(threadid):
   print('Starting trailcam service')
   os.system("sudo service trailcam start")
@@ -32,16 +36,19 @@ def startService(threadid):
       postSlackMessage(':white_check_mark: Service is started', threadid, ':ghost:', 'Cam Control')
   return
 
+# Shutdown the Pi
 def shutdownPi(threadid):
   print('Pi shutting down')
   postSlackMessage(':white_check_mark: Pi shutting down', threadid, ':ghost:', 'Cam Control')
   subprocess.call(["sudo", "shutdown", "-h", "now"])
   return
 
+# Tell slack it send a bad message
 def invalidMessage(threadid):
   postSlackMessage(':no_entry: Invalid command', threadid, ':ghost:', 'Cam Control')
   return
 
+# Figure out what action to take based on the input command and available functions
 def processMessage(message, threadid):
   switcher = {
     'stop': stopService,
@@ -55,9 +62,15 @@ def processMessage(message, threadid):
     func(threadid)
   return
 
+# main process
 def main():
+  # Setup settings
   settings.init()
+
+  # Setup slack
   setupSlack(settings.slackChannel2)
+
+  # If we connected to slack, then process messages. If there is no message, sleep for 10 seconds
   if utilities.sc.rtm_connect():
     while utilities.sc.server.connected is True:
         chat = utilities.sc.rtm_read()
@@ -66,7 +79,7 @@ def main():
         else:
             processChat(chat[0])
 
-
+# Initiate the main process
 if __name__== "__main__":
   try:
       main()
