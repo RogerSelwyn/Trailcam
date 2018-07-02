@@ -1,4 +1,4 @@
-import subprocess, os, logging, sys, getopt, http.client, io
+import subprocess, os, logging, sys, getopt, http.client, io, threading
 from shutil import copyfile
 from datetime import datetime
 from subprocess import call, Popen
@@ -47,32 +47,42 @@ def logError(message):
     return
 
 def storeVideo(input_video, output_basefilename):
+    thread = threading.Thread(target=threadedStoreVideo, args=(input_video, output_basefilename))
+    thread.daemon = True
+    thread.start()
+    return
+
+def threadedStoreVideo(input_video, output_basefilename):
     output_filename = "{}.mp4".format(output_basefilename)
     output_video = findStoreFileName(output_filename)
     logMessage('Saving video to ' + output_video)
-
     call(["MP4Box", "-add", input_video, output_video], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    return output_video, output_filename
+    os.remove(input_video)
+    if not settings.testmode:
+        postSlackVideo(output_video, output_filename, output_filename, "Hedgehog")
+    updatePlex()
+    return
 
 def storeStill(input_still, output_basefilename):
     output_filename = "{}.jpg".format(output_basefilename)
     output_still = findStoreFileName(output_filename)
     logMessage('Saving still to ' + output_still)
     copyfile(input_still, output_still)
-    return output_still, output_filename
+    os.remove(input_still)
+    return 
 
 def processArgs():
     argv = sys.argv[1:] 
 
 
     try:
-        opts, args = getopt.getopt(argv,"hr:t:s:",["recordtime=", "testmode=", "service="])
+        opts, args = getopt.getopt(argv,"hr:t:s:p:",["recordtime=", "testmode=", "service=", "phototime="])
     except getopt.GetoptError:
-        print('trailcam.py -r <recordtime> -t <testmode> -s <service>')
+        print('trailcam.py -r <recordtime> -t <testmode> -s <service> -p <phototime> ')
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print('trailcam.py -r <recordtime> -s <service>')
+            print('trailcam.py -r <recordtime> -s <service> -p <phototime>')
             sys.exit()
         elif opt in ("-r", "--recordtime"):
             settings.recordtime = int(arg)
@@ -82,7 +92,12 @@ def processArgs():
             else:
                 settings.testmode = False
         elif opt in ("-s", "--service"):
-            settings.service = arg
+            if arg == 'True':
+                settings.service = True
+            else:
+                settings.service = False
+        elif opt in ("-p", "--phototime"):
+            settings.stillSeconds = int(arg)
 
     return
 
@@ -158,3 +173,16 @@ def checkService():
     else:
         logMessage('Service running - exiting ')
         return True
+
+def tidyupTempStore():
+  folder = settings.rootPath + "videos/"
+  for the_file in os.listdir(folder):
+    file_path = os.path.join(folder, the_file)
+    try:
+        if os.path.isfile(file_path):
+            os.unlink(file_path)
+        #elif os.path.isdir(file_path): shutil.rmtree(file_path)
+    except Exception as e:
+        logMessage(e)
+
+
