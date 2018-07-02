@@ -33,6 +33,13 @@ def shutdownPi(threadid):
   subprocess.call(["sudo", "shutdown", "-h", "now"])
   return
 
+# Reboot the Pi
+def rebootPi(threadid):
+  print('Pi rebooting')
+  postSlackMessage(':white_check_mark: Pi rebooting', threadid, ':ghost:', 'Cam Control')
+  subprocess.call(["sudo", "reboot"])
+  return
+
 # take a still
 def takeStill(threadid):
   print('Taking still')
@@ -49,8 +56,8 @@ def takeStill(threadid):
   return
 
 # Tell slack it send a bad message
-def invalidMessage(threadid):
-  postSlackMessage(':no_entry: Invalid command', threadid, ':ghost:', 'Cam Control')
+def invalidMessage(threadid, message):
+  postSlackMessage(':no_entry: Invalid command - ' + message, threadid, ':ghost:', 'Cam Control')
   return
 
 # Posts the still to slack

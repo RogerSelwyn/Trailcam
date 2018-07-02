@@ -18,11 +18,12 @@ def processMessage(message, threadid):
     'stop': bc.stopService,
     'start': bc.startService,
     'shutdown': bc.shutdownPi,
+    'Reboot': bc.rebootPi,
     'still': bc.takeStill
   }
   func = switcher.get(message.lower())
   if func is None:
-    invalidMessage(threadid)
+    bc.invalidMessage(threadid, message.lower())
   else:
     func(threadid)
   return
