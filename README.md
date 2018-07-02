@@ -45,7 +45,11 @@ Integrates with Plex and Slack
 * Anker PowerCore II 10000
 
 ## Bot Control
-botcontrol.py monitors a second slack channel, which allows a limited set of commands to 'stop' and 'start' the main trailcam service from slack, and to 'shutdown' the Pi.
+botcontrol.py monitors a second slack channel, which allows a limited set of commands:
+* stop - Stops the Trailcam service
+* start - Starts the Trailcam service
+* still - Take a still and posts to the botcontrol channel
+* shutdown - Shuts down the Pi ```sudo shutdown -h now```
 
 Service for this is:
 
