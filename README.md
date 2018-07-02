@@ -65,6 +65,11 @@ KillSignal=SIGINT
 WantedBy=multi-user.target
 ```
 
+## Problems
+Because the Model 3B that I was given has an unshielded WiFi card on it, this can affect the PIR sensor giving false positives. There are two possible solutions:-
+* Use ethernet (and potentially POE) to provide network connectivity
+* Use at least one (I have two) Ferrite Ring Core(s) around the ground and sensor wires to the PIR, then make sure these are pushed as close to the GPIO end as possible
+
 ## Credits
 Major credits to Chris Johnstone for documenting out how to do the basic setup, from which I have then extended to meet my own needs:
 * From 2016 - [https://peaknature.co.uk/blog/how-to-build-a-raspberry-pi-trail-cam--part-1-introduction]
