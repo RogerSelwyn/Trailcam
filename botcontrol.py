@@ -18,7 +18,7 @@ def processMessage(message, threadid):
     'stop': bc.stopService,
     'start': bc.startService,
     'shutdown': bc.shutdownPi,
-    'Reboot': bc.rebootPi,
+    'reboot': bc.rebootPi,
     'still': bc.takeStill
   }
   func = switcher.get(message.lower())
