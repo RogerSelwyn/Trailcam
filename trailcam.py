@@ -54,11 +54,21 @@ def main():
             while (datetime.now() - start).seconds < settings.recordtime:
                 cam.annotate_text = "Rog Cam "+datetime.now().strftime('%d-%m-%y %H:%M:%S')
                 cam.wait_recording(0.2)
-                if (datetime.now() - start_time).seconds > 2 and not still_captured:
+                if (datetime.now() - start_time).seconds > settings.stillSeconds and not still_captured and settings.stillSeconds > 0:
                     logMessage('Still captured')
                     still_captured = True
+                    logMessage('Exposure Speed 1: ' + str(cam.exposure_speed) + ' Shutter Speed: ' + str(cam.shutter_speed) + ' ISO: ' +str(cam.iso) + ' AG: ' +str(cam.analog_gain) + ' DG: ' +str(cam.digital_gain) + ' AWB: ' +str(cam.awb_gains) + ' Brightness: ' +str(cam.brightness) + ' Contrast: ' +str(cam.contrast) + ' EC: ' +str(cam.exposure_compensation))
+                    storeAWB = cam.awb_gains
+                    print(storeAWB)
                     cam.shutter_speed = 10000
+                    logMessage('Exposure Speed 2: ' + str(cam.exposure_speed) + ' Shutter Speed: ' + str(cam.shutter_speed) + ' ISO: ' +str(cam.iso) + ' AG: ' +str(cam.analog_gain) + ' DG: ' +str(cam.digital_gain) + ' AWB: ' +str(cam.awb_gains) + ' Brightness: ' +str(cam.brightness) + ' Contrast: ' +str(cam.contrast) + ' EC: ' +str(cam.exposure_compensation))
+                    
                     cam.capture(recordStill, use_video_port=False)
+                    logMessage('Exposure Speed 3: ' + str(cam.exposure_speed) + ' Shutter Speed: ' + str(cam.shutter_speed) + ' ISO: ' +str(cam.iso) + ' AG: ' +str(cam.analog_gain) + ' DG: ' +str(cam.digital_gain) + ' AWB: ' +str(cam.awb_gains) + ' Brightness: ' +str(cam.brightness) + ' Contrast: ' +str(cam.contrast) + ' EC: ' +str(cam.exposure_compensation))
+                    cam.shutter_speed = 0
+                    cam.awb_mode = 'off'
+                    cam.awb_gains = storeAWB
+                    logMessage('Exposure Speed 4: ' + str(cam.exposure_speed) + ' Shutter Speed: ' + str(cam.shutter_speed) + ' ISO: ' +str(cam.iso) + ' AG: ' +str(cam.analog_gain) + ' DG: ' +str(cam.digital_gain) + ' AWB: ' +str(cam.awb_gains) + ' Brightness: ' +str(cam.brightness) + ' Contrast: ' +str(cam.contrast) + ' EC: ' +str(cam.exposure_compensation))
 
         total_time = (datetime.now() - start_time).seconds
         cam.stop_recording()
@@ -73,5 +83,10 @@ def main():
     updatePlex()
     time.sleep(10)
 
+
 if __name__== "__main__":
-  main()
+  try:
+      main()
+  except KeyboardInterrupt:
+      logMessage('Finishing')
+      exit()
