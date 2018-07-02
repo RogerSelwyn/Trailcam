@@ -50,6 +50,7 @@ botcontrol.py monitors a second slack channel, which allows a limited set of com
 * start - Starts the Trailcam service
 * still - Take a still and posts to the botcontrol channel
 * shutdown - Shuts down the Pi ```sudo shutdown -h now```
+* reboot - Reboots the pi ```sudo reboot``` 
 
 Service for this is:
 
