@@ -8,7 +8,7 @@ def init():
     global remoteHost, remoteShare, remoteSubfolder, remoteUser, remotePassword
     global plexServer, plexLibrary, plexToken
     global slackToken, slackChannel, slackChannel2
-    global camRotation, camResolution 
+    global camRotation, camResolution, camStillResolution 
 
     # Default record time, if motion is still detected this time is repeated
     recordtime = 10
@@ -43,6 +43,7 @@ def init():
 
     # Camera resolution
     camResolution = (1640, 1232)
+    camStillResolution = (3280, 2464)
 
     # Load JSON config
     with open(rootPath + 'config/config.json', 'r') as f:

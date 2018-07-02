@@ -24,6 +24,7 @@ def main():
 
   # If we aren't running as a service and the service is already running, we'll get a conflict, so quit
   if not settings.service and checkService():
+      logMessage('Service running - exiting ')
       exit()
 
   # Setup the logging

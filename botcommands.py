@@ -1,7 +1,7 @@
 from slackclient import SlackClient
 import os, subprocess, picamera, io
 from datetime import datetime
-from utilities import postSlackMessage
+from utilities import postSlackMessage, checkService
 import settings
 import utilities
 
@@ -9,25 +9,21 @@ import utilities
 # Stop the trailcam service and post a message on outcome to Slack
 def stopService(threadid):
   print('Stopping trailcam service')
-  os.system("sudo service trailcam stop")    
-  try:
-      output = subprocess.check_output(['service', 'trailcam', 'status'])
-  except:
-      postSlackMessage(':white_check_mark: Service is stopped', threadid, ':ghost:', 'Cam Control')
-  else:
+  os.system("sudo service trailcam stop") 
+  if checkService():
       postSlackMessage(':no_entry: Service still running', threadid, ':ghost:', 'Cam Control')
+  else:
+      postSlackMessage(':white_check_mark: Service is stopped', threadid, ':ghost:', 'Cam Control')
   return
 
 # Start the trailcam service and post a message on outcome to Slack
 def startService(threadid):
   print('Starting trailcam service')
-  os.system("sudo service trailcam start")
-  try:
-      output = subprocess.check_output(['service', 'trailcam', 'status'])
-  except:
-      postSlackMessage(':no_entry: Service is stopped', threadid, ':ghost:', 'Cam Control')
-  else:
+  os.system("sudo service trailcam start") 
+  if checkService():
       postSlackMessage(':white_check_mark: Service is started', threadid, ':ghost:', 'Cam Control')
+  else:
+      postSlackMessage(':no_entry: Service is stopped', threadid, ':ghost:', 'Cam Control')
   return
 
 # Shutdown the Pi
@@ -44,7 +40,7 @@ def takeStill(threadid):
   recordStill = settings.rootPath + 'videos/' + output_basefilename + '.jpg'
   with picamera.PiCamera() as cam:
       cam.rotation=settings.camRotation
-      cam.resolution=settings.camResolution
+      cam.resolution=settings.camStillResolution
       cam.annotate_background = picamera.Color('black')
       cam.shutter_speed = 10000
       cam.capture(recordStill, use_video_port=False)

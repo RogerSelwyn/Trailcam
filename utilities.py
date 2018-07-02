@@ -201,7 +201,6 @@ def checkService():
     except:
         return False
     else:
-        logMessage('Service running - exiting ')
         return True
 
 # Tidy up our capture store

@@ -3,9 +3,7 @@ import time
 import settings
 from utilities import setupSlack
 
-from botutilities import (
-    stopService, startService, shutdownPi, invalidMessage, takeStill
-)
+import botcommands as bc
 import utilities
 
 # Process the individual chat message. 
@@ -17,10 +15,10 @@ def processChat(chat):
 # Figure out what action to take based on the input command and available functions
 def processMessage(message, threadid):
   switcher = {
-    'stop': stopService,
-    'start': startService,
-    'shutdown': shutdownPi,
-    'still': takeStill
+    'stop': bc.stopService,
+    'start': bc.startService,
+    'shutdown': bc.shutdownPi,
+    'still': bc.takeStill
   }
   func = switcher.get(message.lower())
   if func is None:
