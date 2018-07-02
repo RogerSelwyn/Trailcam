@@ -184,6 +184,7 @@ def postSlackVideo(input_video, input_filename, input_title, input_comment):
         "files.upload",
         channels=settings.slackChannel,
         filename=input_filename,
+        initial_comment=input_comment,
         title=input_title,
         file=io.BytesIO(f.read())
     )
