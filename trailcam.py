@@ -33,7 +33,7 @@ def main():
   # If we aren't running in test mode, then setup for Slack communication
   if not settings.testmode:
       setupSlack(settings.slackChannel)
-
+      postSlackMessage(':snowflake: ' + settings.botUser + ' is up', None, settings.botEmoji, settings.botUser, settings.slackChannel2)
   # Mount the network share
   mountShare()
 
@@ -56,7 +56,7 @@ def main():
 
     # If not in test mode, send a slack alert - Potential hedgehog!
     if not settings.testmode:
-        threadid = postSlackMessage('Hedgehog alert :hedgehog:')
+        threadid = postSlackMessage('Hedgehog alert :hedgehog:', None, settings.botEmoji, settings.botUser)
 
     # Setup our filenames, so all capture files are consistently named
     output_basefilename = "{}".format(datetime.now().strftime('%Y%m%d-%H%M%S'))
@@ -150,5 +150,7 @@ if __name__== "__main__":
   try:
       main()
   except KeyboardInterrupt:
+      if not settings.testmode:
+          postSlackMessage(':zap: ' + settings.botUser + ' is going down', None, settings.botEmoji, settings.botUser, settings.slackChannel2)
       logMessage('Finishing')
       exit()

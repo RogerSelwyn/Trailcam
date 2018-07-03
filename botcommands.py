@@ -11,9 +11,9 @@ def stopService(threadid):
   print('Stopping trailcam service')
   os.system("sudo service trailcam stop") 
   if checkService():
-      postSlackMessage(':no_entry: Service still running', threadid, ':ghost:', 'Cam Control')
+      postMessage(':no_entry: Service still running', threadid)
   else:
-      postSlackMessage(':white_check_mark: Service is stopped', threadid, ':ghost:', 'Cam Control')
+      postMessage(':white_check_mark: Service is stopped', threadid)
   return
 
 # Start the trailcam service and post a message on outcome to Slack
@@ -21,22 +21,22 @@ def startService(threadid):
   print('Starting trailcam service')
   os.system("sudo service trailcam start") 
   if checkService():
-      postSlackMessage(':white_check_mark: Service is started', threadid, ':ghost:', 'Cam Control')
+      postMessage(':white_check_mark: Service is started', threadid)
   else:
-      postSlackMessage(':no_entry: Service is stopped', threadid, ':ghost:', 'Cam Control')
+      postMessage(':no_entry: Service is stopped', threadid)
   return
 
 # Shutdown the Pi
 def shutdownPi(threadid):
   print('Pi shutting down')
-  postSlackMessage(':white_check_mark: Pi shutting down', threadid, ':ghost:', 'Cam Control')
+  postMessage(':white_check_mark: Pi shutting down', threadid)
   subprocess.call(["sudo", "shutdown", "-h", "now"])
   return
 
 # Reboot the Pi
 def rebootPi(threadid):
   print('Pi rebooting')
-  postSlackMessage(':white_check_mark: Pi rebooting', threadid, ':ghost:', 'Cam Control')
+  postMessage(':white_check_mark: Pi rebooting', threadid)
   subprocess.call(["sudo", "reboot"])
   return
 
@@ -60,7 +60,7 @@ def takeStill(threadid):
 
 # Tell slack it send a bad message
 def invalidMessage(threadid, message):
-  postSlackMessage(':no_entry: Invalid command - ^' + message + '^', threadid, ':ghost:', 'Cam Control')
+  postMessage(':no_entry: Invalid command - ^' + message + '^', threadid)
   return
 
 # Posts the still to slack
@@ -75,8 +75,11 @@ def postSlackStill(input_still, input_filename, input_title, input_comment):
         file=io.BytesIO(f.read())
     )
     if not 'ok' in ret or not ret['ok']:
-        postSlackMessage(':no_entry: Still failed', threadid, ':ghost:', 'Cam Control')
+        postSlackMessage(':no_entry: Still failed', threadid, settings.botEmoji2, settings.botUser2)
     return
 
-
+# Post slack message, with correct emoji and user
+def postMessage(message, threadid = None):
+  postSlackMessage(message, threadid, settings.botEmoji2, settings.botUser2)
+  return
 

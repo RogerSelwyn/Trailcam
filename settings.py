@@ -8,6 +8,7 @@ def init():
     global remoteHost, remoteShare, remoteSubfolder, remoteUser, remotePassword
     global plexServer, plexLibrary, plexToken
     global slackToken, slackChannel, slackChannel2
+    global botEmoji, botEmoji2, botUser, botUser2
     global camRotation, camResolution, camStillResolution 
 
     # Default record time, if motion is still detected this time is repeated
@@ -44,6 +45,14 @@ def init():
     # Camera resolution
     camResolution = (1640, 1232)
     camStillResolution = (3280, 2464)
+    
+    # Bot Emojis
+    botEmoji = ':hedgehog:'
+    botEmoji2 = ':dragon:'
+
+    # Bot Emojis
+    botUser = 'Hog Cam'
+    botUser2 = 'Pi Control'
 
     # Load JSON config
     with open(rootPath + 'config/config.json', 'r') as f:

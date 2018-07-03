@@ -49,7 +49,7 @@ def logError(message):
     logging.error(message)
     print(message)
     if not settings.testmode:
-        postSlackMessage(message)
+        postSlackMessage(message, None, settings.botEmoji, settings.botUser)
     return
 
 # Stores the video but initiating the activities in a separate thread
@@ -161,10 +161,13 @@ def setupSlack(inSC):
 # - threadid replies previous item
 # - iconemoji overrides the default user icon
 # - user_name overrides the default user name
-def postSlackMessage(message, threadid = None, iconemoji = None, user_name = None):
+def postSlackMessage(message, threadid = None, iconemoji = None, user_name = None, overrideChannel = None):
+    outputChannel = slackChannel
+    if not overrideChannel is None:
+      outputChannel = overrideChannel
     ret = sc.api_call(
       "chat.postMessage",
-      channel=slackChannel,
+      channel=outputChannel,
       thread_ts=threadid,
       icon_emoji=iconemoji,
       username=user_name,

@@ -1,7 +1,7 @@
 from slackclient import SlackClient
 import time
 import settings
-from utilities import setupSlack
+from utilities import setupSlack, postSlackMessage
 
 import botcommands as bc
 import utilities
@@ -41,6 +41,9 @@ def main():
   # Setup slack
   setupSlack(settings.slackChannel2)
 
+  # Send message saying we are up and running
+  bc.postMessage(':snowflake: ' + settings.botUser2 + ' is up', None)
+
   # If we connected to slack, then process messages. If there is no message, sleep for 10 seconds
   if utilities.sc.rtm_connect():
     while utilities.sc.server.connected is True:
@@ -55,6 +58,7 @@ if __name__== "__main__":
   try:
       main()
   except KeyboardInterrupt:
+      bc.postMessage(':zap: ' + settings.botUser2 + ' is going down', None)
       print('Finishing')
       exit()
 
