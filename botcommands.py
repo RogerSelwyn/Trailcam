@@ -1,5 +1,5 @@
 from slackclient import SlackClient
-import os, subprocess, picamera, io
+import os, subprocess, picamera, io, time
 from datetime import datetime
 from utilities import postSlackMessage, checkService
 import settings
@@ -40,7 +40,7 @@ def rebootPi(threadid):
   subprocess.call(["sudo", "reboot"])
   return
 
-# take a still
+# Take a still - Set camera parameters, start the camera, wait for 2 seconds, take still, stop the camera, post to slack
 def takeStill(threadid):
   print('Taking still')
   output_basefilename = "{}".format(datetime.now().strftime('%Y%m%d-%H%M%S'))
@@ -50,8 +50,11 @@ def takeStill(threadid):
       cam.resolution=settings.camStillResolution
       cam.annotate_background = picamera.Color('black')
       cam.shutter_speed = 10000
+      cam.start_preview()
+      time.sleep(2)
       cam.capture(recordStill, use_video_port=False)
-      postSlackStill(recordStill, output_basefilename + '.jpg', output_basefilename + '.jpg', "Still")
+      cam.stop_preview()
+  postSlackStill(recordStill, output_basefilename + '.jpg', output_basefilename + '.jpg', "Still")
   os.remove(recordStill)
   return
 

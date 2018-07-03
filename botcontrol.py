@@ -9,7 +9,12 @@ import utilities
 # Process the individual chat message. 
 # If it is a proper message and not the bot replying, then process it 
 def processChat(chat):
-  if chat['type'] == 'message' and not chat.get('subtype') == 'bot_message' and not chat.get('subtype') == 'message_replied' and not chat.get('subtype') == 'file_share':
+  if (
+    chat['type'] == 'message' and 
+    not chat.get('subtype') == 'bot_message' and 
+    not chat.get('subtype') == 'message_replied' and 
+    not chat.get('subtype') == 'file_share'
+  ):
     processMessage(chat['text'], chat['ts'])
 
 # Figure out what action to take based on the input command and available functions
@@ -21,7 +26,7 @@ def processMessage(message, threadid):
     'reboot': bc.rebootPi,
     'still': bc.takeStill
   }
-  func = switcher.get(message.lower())
+  func = switcher.get(message.lower().strip())
   if func is None:
     bc.invalidMessage(threadid, message.lower())
   else:
