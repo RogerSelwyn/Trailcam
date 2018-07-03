@@ -75,7 +75,7 @@ Because the Model 3B that I was given has an unshielded WiFi card on it, this ca
 * Use ethernet (and potentially POE) to provide network connectivity, and turn off the WiFi on the Pi
 * Use at least one (I have two) Ferrite Ring Core(s) around the ground and sensor wires to the PIR, then make sure these are pushed as close to the GPIO end as possible
 
-In theory the Model 3B+ should solve the problem, since it is shielded, however changeing to a 3B+ does not seem to have fixed it completely.
+In theory the Model 3B+ should solve the problem, since it is shielded. However changing to a 3B+ does not seem to have fixed it completely, I still get false postives when I access the Pi via VNC.
 
 ## Credits
 Major credits to Chris Johnstone for documenting out how to do the basic setup, from which I have then extended to meet my own needs:
