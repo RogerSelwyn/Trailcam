@@ -57,7 +57,7 @@ Service for this is:
 ```
 [Unit]
 Description=Botcontrol
-After=multi-user.target
+After=multi-user.target botcontrol.service
 
 [Service]
 Type=idle
