@@ -1,7 +1,7 @@
 from slackclient import SlackClient
 import os, subprocess, picamera, io, time, threading
 from datetime import datetime
-from utilities import postSlackMessage, checkService
+from utilities import postSlackMessage, checkService, updatePlex
 import settings
 import utilities
 
@@ -25,6 +25,12 @@ def startService(threadid):
   else:
       postMessage(':no_entry: Service is stopped', threadid)
   return
+
+def updatePlexCommand(threadid):
+  updatePlex()
+  postMessage(':white_check_mark: Updating Plex', threadid)
+  return
+
 
 # Shutdown the Pi
 def shutdownPi(threadid):

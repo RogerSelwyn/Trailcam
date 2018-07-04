@@ -24,7 +24,8 @@ def processMessage(message, threadid):
     'start': bc.startService,
     'shutdown': bc.shutdownPi,
     'reboot': bc.rebootPi,
-    'still': bc.takeStill
+    'still': bc.takeStill,
+    'plex': bc.updatePlexCommand
   }
   func = switcher.get(message.lower().strip())
   if func is None:
