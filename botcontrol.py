@@ -35,6 +35,7 @@ def processMessage(message, threadid):
 
 # main process
 def main():
+  bc.powerReduce()
   # Setup settings
   settings.init()
 

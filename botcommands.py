@@ -1,5 +1,5 @@
 from slackclient import SlackClient
-import os, subprocess, picamera, io, time
+import os, subprocess, picamera, io, time, threading
 from datetime import datetime
 from utilities import postSlackMessage, checkService
 import settings
@@ -30,15 +30,25 @@ def startService(threadid):
 def shutdownPi(threadid):
   print('Pi shutting down')
   postMessage(':white_check_mark: Pi shutting down', threadid)
-  subprocess.call(["sudo", "shutdown", "-h", "now"])
+  thread = threading.Thread(target=threadedCommand, args=(["sudo", "shutdown", "-h", "now"],))
+  thread.daemon = True
+  thread.start()
   return
 
 # Reboot the Pi
 def rebootPi(threadid):
   print('Pi rebooting')
   postMessage(':white_check_mark: Pi rebooting', threadid)
-  subprocess.call(["sudo", "reboot"])
+  thread = threading.Thread(target=threadedCommand, args=(["sudo", "reboot"],))
+  thread.daemon = True
+  thread.start()
   return
+
+# Move to separate thread to try and get the service shutdown status message being shown
+def threadedCommand(piCommand):
+  subprocess.call(piCommand)
+  return
+ 
 
 # Take a still - Set camera parameters, start the camera, wait for 2 seconds, take still, stop the camera, post to slack
 def takeStill(threadid):
@@ -82,5 +92,11 @@ def postSlackStill(input_still, input_filename, input_title, input_comment):
 # Post slack message, with correct emoji and user
 def postMessage(message, threadid = None):
   postSlackMessage(message, threadid, settings.botEmoji2, settings.botUser2)
+  return
+
+# Reduce power consumption
+def powerReduce():
+  os.system("echo 0 | sudo tee /sys/devices/platform/soc/3f980000.usb/buspower >/dev/null") 
+  # os.system("sudo tvservice --off") 
   return
 
