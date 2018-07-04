@@ -138,7 +138,7 @@ def main():
     time.sleep(5)
 
     # Store the video to NAS, update Plex and post to Slack
-    storeVideo(recordVideo, output_basefilename)
+    storeVideo()
 
 def stillMessage(cam, stillId):
   logMessage(stillId + ' - ' + 'Exposure Speed: ' + str(cam.exposure_speed) + ' Shutter Speed: ' + str(cam.shutter_speed) + ' ISO: ' +str(cam.iso) + ' AG: ' +str(cam.analog_gain) + ' DG: ' +str(cam.digital_gain) + ' AWB: ' +str(cam.awb_gains) + ' Brightness: ' +str(cam.brightness) + ' Contrast: ' +str(cam.contrast) + ' EC: ' +str(cam.exposure_compensation))

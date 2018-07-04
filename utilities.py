@@ -5,6 +5,9 @@ from subprocess import call, Popen
 from slackclient import SlackClient
 import settings
 
+global storeThread
+storeThread = False 
+
 # Mounts share from local SMB location
 # Creates the mount point if needed
 # Then mounts the share to it in RW mode
@@ -52,19 +55,38 @@ def logError(message):
         postSlackMessage(message, None, settings.botEmoji, settings.botUser)
     return
 
-# Stores the video but initiating the activities in a separate thread
-# so as not to hold up the main thread
-def storeVideo(input_video, output_basefilename):
-    thread = threading.Thread(target=threadedStoreVideo, args=(input_video, output_basefilename))
-    thread.daemon = True
-    thread.start()
+# Run thread conversion and storage in separate thread
+# Only run thread if not already running
+def storeVideo():
+    global storeThread
+    if not storeThread:
+        storeThread = True
+        thread = threading.Thread(target=threadedStoreVideos)
+        thread.daemon = True
+        thread.start()
+    return
+
+# Run video storage against each file in directory until empty
+def threadedStoreVideos():
+    global storeThread
+    folder = settings.rootPath + "videos/"
+    while len([name for name in os.listdir(folder) if name.endswith(".h264")]) > 0:
+        for the_file in os.listdir(folder):
+          if the_file.endswith(".h264"):
+              file_path = os.path.join(folder, the_file)
+              try:
+                  if os.path.isfile(file_path):
+                      storeIndividualVideo(file_path, the_file[:-5])
+              except Exception as e:
+                  logMessage(e)
+    storeThread = False
     return
 
 # Convert video to MP4 and store in final location
 # Remove capture file
 # Post to slack if not in test mode
 # Tell Plex to update the library
-def threadedStoreVideo(input_video, output_basefilename):
+def storeIndividualVideo(input_video, output_basefilename):
     output_filename = "{}.mp4".format(output_basefilename)
     output_video = findStoreFileName(output_filename)
     logMessage('Saving video to ' + output_video)
