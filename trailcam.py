@@ -6,11 +6,9 @@ import time
 import os
 
 # Import the various utility scripts and settings
+import utilities as util 
 from utilities import (
-    mountShare, logMessage, logError, storeVideo, 
-    storeStill, processArgs, setupLog, updatePlex, 
-    setupSlack, postSlackMessage, postSlackVideo, 
-    checkService, tidyupTempStore
+    logMessage, logError, 
 )
 import settings
 
@@ -20,25 +18,25 @@ def main():
   settings.init()
 
   # Process the command line arguments
-  processArgs()
+  util.processArgs()
 
   # If we aren't running as a service and the service is already running, we'll get a conflict, so quit
-  if not settings.service and checkService():
+  if not settings.service and util.checkService():
       logMessage('Service running - exiting ')
       exit()
 
   # Setup the logging
-  setupLog()
+  util.setupLog()
 
   # If we aren't running in test mode, then setup for Slack communication
   if not settings.testmode:
-      setupSlack(settings.slackChannel)
-      postSlackMessage(':snowflake: ' + settings.botUser + ' is up', None, settings.botEmoji, settings.botUser, settings.slackChannel2)
+      util.setupSlack(settings.slackChannel)
+      util.postSlackMessage(':snowflake: ' + settings.botUser + ' is up', None, settings.botEmoji, settings.botUser, settings.slackChannel2)
   # Mount the network share
-  mountShare()
+  util.mountShare()
 
   # Tidy up the temporary capture store in case we left it in a mess
-  tidyupTempStore()
+  util.tidyupTempStore()
 
   # PIR is on pin 18
   pir = MotionSensor(18)
@@ -48,30 +46,37 @@ def main():
   # Wait an initial duration to allow PIR to settle
   time.sleep(10)
 
-  # Keep going for ever
-  while True:
-    logMessage('Waiting for motion')
-    pir.wait_for_motion()
-    logMessage('Motion detected recording for '+ str(settings.recordtime)+' seconds')
+  # Camera time !
+  with picamera.PiCamera() as cam:
+    # Set the camera up
+    timeFM = '%H:%M:%S.%f'
+    cam.rotation=settings.camRotation
+    cam.resolution=settings.camResolution
+    cam.annotate_background = picamera.Color('black')
 
-    # If not in test mode, send a slack alert - Potential hedgehog!
-    if not settings.testmode:
-        threadid = postSlackMessage('Hedgehog alert :hedgehog:', None, settings.botEmoji, settings.botUser)
+    # Record when last motion detected
+    global motionStart
+    pir.when_motion = incrementTimer
 
-    # Setup our filenames, so all capture files are consistently named
-    output_basefilename = "{}".format(datetime.now().strftime('%Y%m%d-%H%M%S'))
-    recordVideo = settings.rootPath + 'videos/' + output_basefilename + '.h264'
-    recordStill = settings.rootPath + 'videos/' + output_basefilename + '.jpg'
+    # Keep going for ever
+    while True:
+        logMessage('Waiting for motion')
+        pir.wait_for_motion()
+        # print("{} - Motion".format(datetime.now().strftime(timeFM)))
+        logMessage('Motion detected recording for '+ str(settings.recordtime)+' seconds')
 
-    # Camera time !
-    with picamera.PiCamera() as cam:
-        # Set the camera up
-        cam.rotation=settings.camRotation
-        cam.resolution=settings.camResolution
-        cam.annotate_background = picamera.Color('black')
+        # If not in test mode, send a slack alert - Potential hedgehog!
+        if not settings.testmode:
+            util.postThreadedSlackMessage('Hedgehog alert :hedgehog:', None, settings.botEmoji, settings.botUser)
+
+        # Setup our filenames, so all capture files are consistently named
+        output_basefilename = "{}".format(datetime.now().strftime('%Y%m%d-%H%M%S'))
+        recordVideo = settings.rootPath + 'videos/' + output_basefilename + '.h264'
+        recordStill = settings.rootPath + 'videos/' + output_basefilename + '.jpg'
+
 
         # Start recording
-        cam.start_recording(recordVideo)
+        cam.start_recording(recordVideo + '.tmp', format='h264')
 
         # Start the overall timer
         start_time = datetime.now()
@@ -79,6 +84,9 @@ def main():
         # Set status
         start_record = True
         still_captured = False
+
+        # Make sure timer is set
+        motionStart = datetime.now()
 
         # Keep recording while there is still motion
         while pir.motion_detected:
@@ -124,7 +132,8 @@ def main():
                     cam.awb_gains = storeAWB
                     stillMessage(cam, '4')
                     logMessage('Still captured')
-                    storeStill(recordStill, output_basefilename)
+                    util.storeStill(recordStill, output_basefilename)
+
 
         # Capture the total recording time
         total_time = (datetime.now() - start_time).seconds
@@ -132,17 +141,29 @@ def main():
         # Stop recording
         cam.stop_recording()
 
-    logMessage('Stopped recording after ' + str(total_time) + ' seconds')
+        logMessage('Stopped recording after ' + str(total_time) + ' seconds')
 
-    # Go to sleep to let everything settle
-    time.sleep(5)
+        # Go to sleep to let everything settle
+        time.sleep(5)
 
-    # Store the video to NAS, update Plex and post to Slack
-    storeVideo()
+        # Rename file
+        os.rename(recordVideo + '.tmp', recordVideo)
+
+        # Store the video to NAS, update Plex and post to Slack
+        util.storeVideo()
+  return
+
 
 def stillMessage(cam, stillId):
   logMessage(stillId + ' - ' + 'Exposure Speed: ' + str(cam.exposure_speed) + ' Shutter Speed: ' + str(cam.shutter_speed) + ' ISO: ' +str(cam.iso) + ' AG: ' +str(cam.analog_gain) + ' DG: ' +str(cam.digital_gain) + ' AWB: ' +str(cam.awb_gains) + ' Brightness: ' +str(cam.brightness) + ' Contrast: ' +str(cam.contrast) + ' EC: ' +str(cam.exposure_compensation))
 
+# Set the time last motion was seen
+def incrementTimer():
+    logMessage('Motion event')
+    global motionStart
+    motionStart = datetime.now()
+    return
+    
 
 
 # Initiate everything
@@ -151,6 +172,6 @@ if __name__== "__main__":
       main()
   except KeyboardInterrupt:
       if not settings.testmode:
-          postSlackMessage(':zap: ' + settings.botUser + ' is going down', None, settings.botEmoji, settings.botUser, settings.slackChannel2)
+          util.postSlackMessage(':zap: ' + settings.botUser + ' is going down', None, settings.botEmoji, settings.botUser, settings.slackChannel2)
       logMessage('Finishing')
       exit()

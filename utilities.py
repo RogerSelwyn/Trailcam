@@ -179,6 +179,14 @@ def setupSlack(inSC):
     sc.api_call("auth.test")["user_id"]
     return
 
+# Initiate threaded slack message post to run async
+def postThreadedSlackMessage(message, threadid = None, iconemoji = None, user_name = None, overrideChannel = None):
+  thread = threading.Thread(target=postSlackMessage, args=(message, threadid, iconemoji, user_name, overrideChannel))
+  thread.daemon = True
+  thread.start()
+  return
+
+
 # Send a slack message
 # - threadid replies previous item
 # - iconemoji overrides the default user icon
@@ -239,5 +247,6 @@ def tidyupTempStore():
         #elif os.path.isdir(file_path): shutil.rmtree(file_path)
     except Exception as e:
         logMessage(e)
+
 
 
