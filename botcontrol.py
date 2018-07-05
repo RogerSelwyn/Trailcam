@@ -7,13 +7,11 @@ import botcommands as bc
 import utilities
 
 # Process the individual chat message. 
-# If it is a proper message and not the bot replying, then process it 
+# If it is a proper message and not a message subtype, then process it 
 def processChat(chat):
   if (
     chat['type'] == 'message' and 
-    not chat.get('subtype') == 'bot_message' and 
-    not chat.get('subtype') == 'message_replied' and 
-    not chat.get('subtype') == 'file_share'
+    'subtype' not in chat
   ):
     processMessage(chat['text'], chat['ts'])
 
