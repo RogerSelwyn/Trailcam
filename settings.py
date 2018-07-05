@@ -9,7 +9,7 @@ def init():
     global plexServer, plexLibrary, plexToken
     global slackToken, slackChannel, slackChannel2
     global botEmoji, botEmoji2, botUser, botUser2
-    global camRotation, camResolution, camStillResolution 
+    global camRotation, camResolution, camStillResolution, camTitle 
 
     # Default record time, if motion is still detected this time is repeated
     recordtime = 10
@@ -45,6 +45,9 @@ def init():
     # Camera resolution
     camResolution = (1640, 1232)
     camStillResolution = (3280, 2464)
+
+    # Camera annotation title
+    camTitle = 'Hog Cam'
     
     # Bot Emojis
     botEmoji = ':hedgehog:'

@@ -102,7 +102,7 @@ def main():
             # Keep recording for the specified time period
             while (datetime.now() - start).seconds < settings.recordtime:
                 # Update the text on the clip every 0.2 seconds
-                cam.annotate_text = "Rog Cam "+datetime.now().strftime('%d-%m-%y %H:%M:%S')
+                cam.annotate_text = settings.camTitle + " "+datetime.now().strftime('%d-%m-%y %H:%M:%S')
                 cam.wait_recording(0.2)
 
                 # If we are meant to be capturing a still, check to see if we need to do it now
