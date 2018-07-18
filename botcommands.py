@@ -95,14 +95,30 @@ def postSlackStill(input_still, input_filename, input_title, input_comment):
         postSlackMessage(':no_entry: Still failed', threadid, settings.botEmoji2, settings.botUser2)
     return
 
+def powerReduce(threadid):
+  postMessage(':white_check_mark: Power consumption reducing', threadid)
+  powerChange(0, 'up')
+  postMessage(':white_check_mark: Power consumption reduced', threadid)
+  setupSlack(settings.slackChannel2)
+  return
+
+def powerIncrease(threadid):
+  postMessage(':white_check_mark: Power consumption increasing', threadid)
+  powerChange(1, 'down')
+  postMessage(':white_check_mark: Power consumption increased', threadid)
+  setupSlack(settings.slackChannel2)
+  return
+
 # Post slack message, with correct emoji and user
 def postMessage(message, threadid = None):
   postSlackMessage(message, threadid, settings.botEmoji2, settings.botUser2)
   return
 
 # Reduce power consumption
-def powerReduce():
-  os.system("echo 0 | sudo tee /sys/devices/platform/soc/3f980000.usb/buspower >/dev/null") 
+def powerChange(onOff, upDown):
+  os.system("echo " + str(onOff) + " | sudo tee /sys/devices/platform/soc/3f980000.usb/buspower >/dev/null") 
   # os.system("sudo tvservice --off") 
+  os.system("sudo ifconfig wlan0 " + upDown)
+  time.sleep(5)
   return
 

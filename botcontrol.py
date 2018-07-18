@@ -1,7 +1,7 @@
 from slackclient import SlackClient
 import time
 import settings
-from utilities import setupSlack, postSlackMessage
+from utilities import setupSlack, postSlackMessage, is_online
 
 import botcommands as bc
 import utilities
@@ -23,7 +23,9 @@ def processMessage(message, threadid):
     'shutdown': bc.shutdownPi,
     'reboot': bc.rebootPi,
     'still': bc.takeStill,
-    'plex': bc.updatePlexCommand
+    'plex': bc.updatePlexCommand,
+    'power up': bc.powerIncrease,
+    'power down': bc.powerReduce,
   }
   func = switcher.get(message.lower().strip())
   if func is None:
@@ -34,7 +36,12 @@ def processMessage(message, threadid):
 
 # main process
 def main():
-  bc.powerReduce()
+  # bc.powerChange(0, 'up')
+
+  while not is_online():
+      print('Net down.')
+  print('Net up.')
+
   # Setup settings
   settings.init()
 

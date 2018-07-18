@@ -1,4 +1,4 @@
-import subprocess, os, logging, sys, getopt, http.client, io, threading
+import subprocess, os, logging, sys, getopt, http.client, io, threading, time, urllib
 from shutil import copyfile
 from datetime import datetime
 from subprocess import call, Popen
@@ -247,6 +247,36 @@ def tidyupTempStore():
         #elif os.path.isdir(file_path): shutil.rmtree(file_path)
     except Exception as e:
         logMessage(e)
+
+def is_online(**kwargs):
+    '''
+    Determine weather or not your network is online
+    by sending a HTTP GET request. If the network is
+    online the function will return true. If the network
+    is not online the function will return false
+    '''
+
+    # Set the default request time out.
+    # This will be passed as a keyword argument
+    # to urllib2.urlopen.
+    kwargs.setdefault('timeout', 0.30)
+    kwargs.setdefault('url', 'http://www.google.com')
+    timeout = kwargs.get('timeout')
+    url = kwargs.get('url')
+
+    try:
+        print('Sending request to {}'.format(url))
+        response = urllib.request.urlopen(url, timeout=timeout)
+    except KeyboardInterrupt:
+        sys.exit(0)
+    except Exception:
+        # Generally using a catch-all is a bad practice but
+        # I think it's ok in this case
+        response = False
+    if response:
+        return True
+    else:
+        return False
 
 
 

@@ -14,6 +14,10 @@ import settings
 
 # Main process
 def main():
+  while not util.is_online():
+      print('Net down.')
+  print('Net up.')
+
   # Load the settings
   settings.init()
 
@@ -36,7 +40,8 @@ def main():
   util.mountShare()
 
   # Tidy up the temporary capture store in case we left it in a mess
-  util.tidyupTempStore()
+  # util.tidyupTempStore()
+  util.storeVideo()
 
   # PIR is on pin 18
   pir = MotionSensor(18)
@@ -53,6 +58,12 @@ def main():
     cam.rotation=settings.camRotation
     cam.resolution=settings.camResolution
     cam.annotate_background = picamera.Color('black')
+    if 1 == 2:
+      output_basefilename = "{}".format(datetime.now().strftime('%Y%m%d-%H%M%S'))
+      recordVideo = settings.rootPath + 'videos/' + output_basefilename + '.h264'
+      cam.start_recording(recordVideo + '.tmp', format='h264')
+      cam.wait_recording(1)
+      cam.stop_recording()
 
     # Record when last motion detected
     global motionStart
