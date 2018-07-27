@@ -58,8 +58,10 @@ def threadedCommand(piCommand):
 
 # Take a still - Set camera parameters, start the camera, wait for 2 seconds, take still, stop the camera, post to slack
 def takeStill(threadid):
-  print('Taking still')
-  postMessage(':white_check_mark: Taking still', threadid)
+  if checkService():
+      print('Still not possible - service running')
+      postMessage(':no_entry: Still not possible - service running', threadid)
+      return
   output_basefilename = "{}".format(datetime.now().strftime('%Y%m%d-%H%M%S'))
   recordStill = settings.rootPath + 'videos/' + output_basefilename + '.jpg'
   with picamera.PiCamera() as cam:

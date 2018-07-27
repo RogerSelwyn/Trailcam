@@ -12,7 +12,7 @@ def init():
     global camRotation, camResolution, camStillResolution, camTitle 
 
     # Default record time, if motion is still detected this time is repeated
-    recordtime = 10
+    recordtime = 20
 
     # Default to test mode, so I don't need to keep specifying when testing :-)
     # Switches off Slack
