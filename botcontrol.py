@@ -18,18 +18,18 @@ def processChat(chat):
 # Figure out what action to take based on the input command and available functions
 def processMessage(message, threadid):
   switcher = {
-    'stop': bc.stopService,
-    'start': bc.startService,
-    'shutdown': bc.shutdownPi,
-    'reboot': bc.rebootPi,
-    'still': bc.takeStill,
+    'stop': bc.stopServiceCommand,
+    'start': bc.startServiceCommand,
+    'shutdown': bc.shutdownPiCommand,
+    'reboot': bc.rebootPiCommand,
+    'still': bc.takeStillCommand,
     'plex': bc.updatePlexCommand,
-    'power up': bc.powerIncrease,
-    'power down': bc.powerReduce,
+    'power up': bc.powerIncreaseCommand,
+    'power down': bc.powerReduceCommand,
   }
   func = switcher.get(message.lower().strip())
   if func is None:
-    bc.invalidMessage(threadid, message.lower())
+    bc.invalidCommand(threadid, message.lower())
   else:
     func(threadid)
   return

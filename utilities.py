@@ -43,7 +43,8 @@ def setupLog():
 
 # Logs a message to the log file, and prints it to console
 def logMessage(message):
-    logging.info(message)
+    pidMessage = str(os.getpid()) + ', ' + str(threading.currentThread().ident) + ', ' + message
+    logging.info(pidMessage)
     print(message)
     return
 
@@ -69,6 +70,7 @@ def storeVideo():
 # Run video storage against each file in directory until empty
 def threadedStoreVideos():
     global storeThread
+    logMessage('Subprocess started')
     folder = settings.rootPath + "videos/"
     while len([name for name in os.listdir(folder) if name.endswith(".h264")]) > 0:
         for the_file in os.listdir(folder):
@@ -80,6 +82,7 @@ def threadedStoreVideos():
               except Exception as e:
                   logMessage(e)
     storeThread = False
+    logMessage('Subprocess stopped')
     return
 
 # Convert video to MP4 and store in final location
@@ -110,8 +113,6 @@ def storeStill(input_still, output_basefilename):
 # Process command line arguments
 def processArgs():
     argv = sys.argv[1:] 
-
-
     try:
         opts, args = getopt.getopt(argv,"hr:t:s:p:",["recordtime=", "testmode=", "service=", "phototime="])
     except getopt.GetoptError:
@@ -248,21 +249,17 @@ def tidyupTempStore():
     except Exception as e:
         logMessage(e)
 
-def is_online(**kwargs):
+# Check to see if connected to network
+def is_online():
     '''
-    Determine weather or not your network is online
+    Determine whether or not network is online
     by sending a HTTP GET request. If the network is
     online the function will return true. If the network
     is not online the function will return false
     '''
 
-    # Set the default request time out.
-    # This will be passed as a keyword argument
-    # to urllib2.urlopen.
-    kwargs.setdefault('timeout', 0.30)
-    kwargs.setdefault('url', 'http://www.google.com')
-    timeout = kwargs.get('timeout')
-    url = kwargs.get('url')
+    timeout = 0.30
+    url = 'http://www.google.com'
 
     try:
         print('Sending request to {}'.format(url))

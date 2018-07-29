@@ -7,7 +7,7 @@ import utilities
 
 
 # Stop the trailcam service and post a message on outcome to Slack
-def stopService(threadid):
+def stopServiceCommand(threadid):
   print('Stopping trailcam service')
   os.system("sudo service trailcam stop") 
   if checkService():
@@ -17,7 +17,7 @@ def stopService(threadid):
   return
 
 # Start the trailcam service and post a message on outcome to Slack
-def startService(threadid):
+def startServiceCommand(threadid):
   print('Starting trailcam service')
   os.system("sudo service trailcam start") 
   if checkService():
@@ -26,14 +26,8 @@ def startService(threadid):
       postMessage(':no_entry: Service is stopped', threadid)
   return
 
-def updatePlexCommand(threadid):
-  updatePlex()
-  postMessage(':white_check_mark: Updating Plex', threadid)
-  return
-
-
 # Shutdown the Pi
-def shutdownPi(threadid):
+def shutdownPiCommand(threadid):
   print('Pi shutting down')
   postMessage(':white_check_mark: Pi shutting down', threadid)
   thread = threading.Thread(target=threadedCommand, args=(["sudo", "shutdown", "-h", "now"],))
@@ -42,7 +36,7 @@ def shutdownPi(threadid):
   return
 
 # Reboot the Pi
-def rebootPi(threadid):
+def rebootPiCommand(threadid):
   print('Pi rebooting')
   postMessage(':white_check_mark: Pi rebooting', threadid)
   thread = threading.Thread(target=threadedCommand, args=(["sudo", "reboot"],))
@@ -50,14 +44,8 @@ def rebootPi(threadid):
   thread.start()
   return
 
-# Move to separate thread to try and get the service shutdown status message being shown
-def threadedCommand(piCommand):
-  subprocess.call(piCommand)
-  return
- 
-
 # Take a still - Set camera parameters, start the camera, wait for 2 seconds, take still, stop the camera, post to slack
-def takeStill(threadid):
+def takeStillCommand(threadid):
   if checkService():
       print('Still not possible - service running')
       postMessage(':no_entry: Still not possible - service running', threadid)
@@ -77,9 +65,34 @@ def takeStill(threadid):
   os.remove(recordStill)
   return
 
+# Update plex
+def updatePlexCommand(threadid):
+  updatePlex()
+  postMessage(':white_check_mark: Updating Plex', threadid)
+  return
+
+def powerReduceCommand(threadid):
+  postMessage(':white_check_mark: Power consumption reducing', threadid)
+  powerChange(0, 'up')
+  postMessage(':white_check_mark: Power consumption reduced', threadid)
+  setupSlack(settings.slackChannel2)
+  return
+
+def powerIncreaseCommand(threadid):
+  postMessage(':white_check_mark: Power consumption increasing', threadid)
+  powerChange(1, 'down')
+  postMessage(':white_check_mark: Power consumption increased', threadid)
+  setupSlack(settings.slackChannel2)
+  return
+
 # Tell slack it send a bad message
-def invalidMessage(threadid, message):
+def invalidCommand(threadid, message):
   postMessage(':no_entry: Invalid command - ^' + message + '^', threadid)
+  return
+
+# Move to separate thread to try and get the service shutdown status message being shown
+def threadedCommand(piCommand):
+  subprocess.call(piCommand)
   return
 
 # Posts the still to slack
@@ -96,20 +109,6 @@ def postSlackStill(input_still, input_filename, input_title, input_comment):
     if not 'ok' in ret or not ret['ok']:
         postSlackMessage(':no_entry: Still failed', threadid, settings.botEmoji2, settings.botUser2)
     return
-
-def powerReduce(threadid):
-  postMessage(':white_check_mark: Power consumption reducing', threadid)
-  powerChange(0, 'up')
-  postMessage(':white_check_mark: Power consumption reduced', threadid)
-  setupSlack(settings.slackChannel2)
-  return
-
-def powerIncrease(threadid):
-  postMessage(':white_check_mark: Power consumption increasing', threadid)
-  powerChange(1, 'down')
-  postMessage(':white_check_mark: Power consumption increased', threadid)
-  setupSlack(settings.slackChannel2)
-  return
 
 # Post slack message, with correct emoji and user
 def postMessage(message, threadid = None):

@@ -58,12 +58,6 @@ def main():
     cam.rotation=settings.camRotation
     cam.resolution=settings.camResolution
     cam.annotate_background = picamera.Color('black')
-    if 1 == 2:
-      output_basefilename = "{}".format(datetime.now().strftime('%Y%m%d-%H%M%S'))
-      recordVideo = settings.rootPath + 'videos/' + output_basefilename + '.h264'
-      cam.start_recording(recordVideo + '.tmp', format='h264')
-      cam.wait_recording(1)
-      cam.stop_recording()
 
     # Record when last motion detected
     global motionStart
@@ -71,9 +65,9 @@ def main():
 
     # Keep going for ever
     while True:
+        # Wait for motion....
         logMessage('Waiting for motion')
         pir.wait_for_motion()
-        # print("{} - Motion".format(datetime.now().strftime(timeFM)))
         logMessage('Motion detected recording for '+ str(settings.recordtime)+' seconds')
 
         # If not in test mode, send a slack alert - Potential hedgehog!
@@ -164,7 +158,7 @@ def main():
         util.storeVideo()
   return
 
-
+# Code for debugging what is happening with Still photo taking, because image needs improving
 def stillMessage(cam, stillId):
   logMessage(stillId + ' - ' + 'Exposure Speed: ' + str(cam.exposure_speed) + ' Shutter Speed: ' + str(cam.shutter_speed) + ' ISO: ' +str(cam.iso) + ' AG: ' +str(cam.analog_gain) + ' DG: ' +str(cam.digital_gain) + ' AWB: ' +str(cam.awb_gains) + ' Brightness: ' +str(cam.brightness) + ' Contrast: ' +str(cam.contrast) + ' EC: ' +str(cam.exposure_compensation))
 
