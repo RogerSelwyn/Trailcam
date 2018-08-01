@@ -196,14 +196,18 @@ def postSlackMessage(message, threadid = None, iconemoji = None, user_name = Non
     outputChannel = slackChannel
     if not overrideChannel is None:
       outputChannel = overrideChannel
-    ret = sc.api_call(
-      "chat.postMessage",
-      channel=outputChannel,
-      thread_ts=threadid,
-      icon_emoji=iconemoji,
-      username=user_name,
-      text=message
-    )
+    try:
+        ret = sc.api_call(
+          "chat.postMessage",
+          channel=outputChannel,
+          thread_ts=threadid,
+          icon_emoji=iconemoji,
+          username=user_name,
+          text=message
+        )
+    except Exception as e:
+        logMessage(e)
+
     if not 'ok' in ret or not ret['ok']:
         logError("Slack Post EXCEPTION: " + str(ret))
         return
@@ -214,16 +218,20 @@ def postSlackMessage(message, threadid = None, iconemoji = None, user_name = Non
 # Posts the video to slack
 def postSlackVideo(input_video, input_filename, input_title, input_comment):
   with open(input_video, 'rb') as f:
-    ret = sc.api_call(
-        "files.upload",
-        channels=settings.slackChannel,
-        filename=input_filename,
-        initial_comment=input_comment,
-        title=input_title,
-        file=io.BytesIO(f.read())
-    )
+    try:
+        ret = sc.api_call(
+            "files.upload",
+            channels=settings.slackChannel,
+            filename=input_filename,
+            initial_comment=input_comment,
+            title=input_title,
+            file=io.BytesIO(f.read())
+        )
+    except Exception as e:
+        logMessage(e)
+
     if not 'ok' in ret or not ret['ok']:
-        logError("Slack Post EXCEPTION: " + str(ret))
+            logError("Slack Post EXCEPTION: " + str(ret))
     else:
         logMessage('Slack video uploaded - ' + input_filename)
     return
