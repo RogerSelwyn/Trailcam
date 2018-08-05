@@ -40,7 +40,7 @@ def init():
     storePath = '/mnt/' + remoteHost + '/'
 
     # Camera rotation, 180 for inverted camera
-    camRotation = 180
+    camRotation = 0
 
     # Camera resolution
     camResolution = (1640, 1232)

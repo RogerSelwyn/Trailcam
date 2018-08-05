@@ -72,7 +72,7 @@ def threadedStoreVideos():
     global storeThread
     logMessage('Subprocess started')
     folder = settings.rootPath + "videos/"
-    while len([name for name in os.listdir(folder) if name.endswith(".h264")]) > 0:
+    while len([name for name in sorted(os.listdir(folder)) if name.endswith(".h264")]) > 0:
         for the_file in os.listdir(folder):
           if the_file.endswith(".h264"):
               file_path = os.path.join(folder, the_file)
@@ -95,9 +95,9 @@ def storeIndividualVideo(input_video, output_basefilename):
     logMessage('Saving video to ' + output_video)
     call(["MP4Box", "-add", input_video, output_video], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     os.remove(input_video)
+    updatePlex()
     if not settings.testmode:
         postSlackVideo(output_video, output_filename, output_filename, "Hedgehog")
-    updatePlex()
     return
 
 # Store still in final location
