@@ -1,7 +1,6 @@
 from slackclient import SlackClient
 import time
 import settings
-from utilities import setupSlack, is_online
 
 import botcommands as bc
 import utilities
@@ -38,7 +37,7 @@ def processMessage(message, threadid):
 def main():
   # bc.powerChange(0, 'up')
 
-  while not is_online():
+  while not utilities.is_online():
       print('Net down.')
   print('Net up.')
 
@@ -46,7 +45,7 @@ def main():
   settings.init()
 
   # Setup slack
-  setupSlack(settings.slackChannel2)
+  utilities.setupSlack(settings.slackChannel2)
 
   # Send message saying we are up and running
   bc.postMessage(':snowflake: ' + settings.botUser2 + ' is up', None)
