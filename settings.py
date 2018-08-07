@@ -6,8 +6,8 @@ def init():
     global storePath, rootPath
     global stillSeconds
     global remoteHost, remoteShare, remoteSubfolder, remoteUser, remotePassword
-    global plexServer, plexLibrary, plexToken
-    global slackToken, slackChannel, slackChannel2
+    global plexServer, plexLibrary, plexToken, plexServerKey
+    global slackToken, slackChannel, slackChannel2, slackVideo
     global botEmoji, botEmoji2, botUser, botUser2
     global camRotation, camResolution, camStillResolution, camTitle 
 
@@ -57,6 +57,9 @@ def init():
     botUser = 'Hog Cam'
     botUser2 = 'Pi Control'
 
+    # Post video to slack
+    slackVideo = False
+
     # Load JSON config
     with open(rootPath + 'config/config.json', 'r') as f:
         config = json.load(f)
@@ -75,6 +78,9 @@ def init():
 
     # Plex token
     plexToken = config['plexToken']
+
+    # Plex server key
+    plexServerKey = config['plexServerKey']
 
     # Slack token for bot
     slackToken = config['slackToken'] 

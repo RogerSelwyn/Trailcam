@@ -1,4 +1,4 @@
-import subprocess, os, logging, sys, getopt, http.client, io, threading, time, urllib
+import subprocess, os, logging, sys, getopt, http.client, io, threading, time, urllib, requests
 from shutil import copyfile
 from datetime import datetime
 from subprocess import call, Popen
@@ -96,8 +96,12 @@ def storeIndividualVideo(input_video, output_basefilename):
     call(["MP4Box", "-add", input_video, output_video], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     os.remove(input_video)
     updatePlex()
-    if not settings.testmode:
+    if not settings.testmode and settings.slackVideo:
         postSlackVideo(output_video, output_filename, output_filename, "Hedgehog")
+    elif not settings.testmode:
+        ratingKey = plex_ratingKey(output_basefilename)
+        plexURL = 'plex://play/?metadataKey=%2Flibrary%2Fmetadata%2F' + ratingKey + '&metadataType=1&server=' + settings.plexServerKey
+        postSlackMessage('Video uploaded to Plex - <' + plexURL + '|' + output_filename + '>', None, settings.botEmoji, settings.botUser)
     return
 
 # Store still in final location
@@ -231,7 +235,7 @@ def postSlackVideo(input_video, input_filename, input_title, input_comment):
         logMessage(e)
 
     if not 'ok' in ret or not ret['ok']:
-            logError("Slack Post EXCEPTION: " + str(ret))
+        logError("Slack Post EXCEPTION: " + str(ret))
     else:
         logMessage('Slack video uploaded - ' + input_filename)
     return
@@ -282,6 +286,21 @@ def is_online():
         return True
     else:
         return False
+
+# get the Plex video ratingKey
+def plex_ratingKey(video_title):
+    url = 'http://' + settings.plexServer + '/library/sections/' + settings.plexLibrary + '/all?X-Plex-Token=' + settings.plexToken
+
+    i = 0
+    while i < 5:
+        i += 1 
+        time.sleep(2)
+        response = requests.get(url, headers={"Accept":"application/json"})
+        data = response.json()['MediaContainer']['Metadata']
+        for video in data:
+            if video['title'] == video_title:
+                return video['ratingKey']
+                break
 
 
 

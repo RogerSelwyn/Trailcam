@@ -1,7 +1,7 @@
 from slackclient import SlackClient
 import time
 import settings
-from utilities import setupSlack, postSlackMessage, is_online
+from utilities import setupSlack, is_online
 
 import botcommands as bc
 import utilities
