@@ -3,7 +3,7 @@ import time
 import settings
 
 import botcommands as bc
-import utilities
+import utilities as util 
 
 # Process the individual chat message. 
 # If it is a proper message and not a message subtype, then process it 
@@ -37,7 +37,7 @@ def processMessage(message, threadid):
 def main():
   # bc.powerChange(0, 'up')
 
-  while not utilities.is_online():
+  while not util.is_online():
       print('Net down.')
   print('Net up.')
 
@@ -45,15 +45,15 @@ def main():
   settings.init()
 
   # Setup slack
-  utilities.setupSlack(settings.slackChannel2)
+  util.setupSlack(settings.slackChannel2)
 
   # Send message saying we are up and running
   bc.postMessage(':snowflake: ' + settings.botUser2 + ' is up', None)
 
   # If we connected to slack, then process messages. If there is no message, sleep for 10 seconds
-  if utilities.sc.rtm_connect():
-    while utilities.sc.server.connected is True:
-        chat = utilities.sc.rtm_read()
+  if util.sc.rtm_connect():
+    while util.sc.server.connected is True:
+        chat = util.sc.rtm_read()
         if len(chat) == 0:
             time.sleep(10)
         else:
