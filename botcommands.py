@@ -50,6 +50,9 @@ def takeStillCommand(threadid):
       print('Still not possible - service running')
       postMessage(':no_entry: Still not possible - service running', threadid)
       return
+  else:
+      postMessage(':white_check_mark: Taking still', threadid)
+
   output_basefilename = "{}".format(datetime.now().strftime('%Y%m%d-%H%M%S'))
   recordStill = settings.rootPath + 'videos/' + output_basefilename + '.jpg'
   with picamera.PiCamera() as cam:
@@ -61,7 +64,7 @@ def takeStillCommand(threadid):
       time.sleep(2)
       cam.capture(recordStill, use_video_port=False)
       cam.stop_preview()
-  postSlackStill(recordStill, output_basefilename + '.jpg', output_basefilename + '.jpg', "Still")
+  postSlackStill(recordStill, output_basefilename + '.jpg', output_basefilename + '.jpg', 'Still - ' + output_basefilename + '.jpg')
   os.remove(recordStill)
   return
 
