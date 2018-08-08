@@ -4,7 +4,7 @@ After=multi-user.target
 
 [Service]
 Type=idle
-ExecStart=/usr/bin/python3 /home/pi/Trailcam/botcontrol.py
+ExecStart=/usr/bin/python3 -u /home/pi/Trailcam/botcontrol.py
 User=pi
 Group=pi
 KillSignal=SIGINT

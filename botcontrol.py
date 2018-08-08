@@ -38,15 +38,11 @@ def processMessage(message, threadid):
 def main():
   # bc.powerChange(0, 'up')
   
-  netUp = False
-  while not netUp:
-      netUp = util.is_online()
-      print('Net down.')
-      time.sleep(1)
-  print('Net up.')
-
   # Setup settings
   settings.init()
+
+  # Wait for network to come up
+  util.waitForNetUp(settings.botUser2)
 
   # Setup slack
   util.setupSlack(settings.slackChannel2)

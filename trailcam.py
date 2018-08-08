@@ -14,12 +14,11 @@ import settings
 
 # Main process
 def main():
-  while not util.is_online():
-      print('Net down.')
-  print('Net up.')
-
   # Load the settings
   settings.init()
+
+  # Wait for network to come up
+  util.waitForNetUp(settings.botUser)
 
   # Process the command line arguments
   util.processArgs()

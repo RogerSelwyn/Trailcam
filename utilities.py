@@ -287,7 +287,7 @@ def is_online():
     else:
         return False
 
-# get the Plex video ratingKey
+# Get the Plex video ratingKey
 def plex_ratingKey(video_title):
     url = 'http://' + settings.plexServer + '/library/sections/' + settings.plexLibrary + '/all?X-Plex-Token=' + settings.plexToken
 
@@ -301,6 +301,17 @@ def plex_ratingKey(video_title):
             if video['title'] == video_title:
                 return video['ratingKey']
                 break
+
+# Wait for Network to come up
+def waitForNetUp(botuser):
+  netUp = False
+  while not netUp:
+      netUp = is_online()
+      if not netUp:
+          print('Net down - ' + botUser)
+          time.sleep(1)
+  print('Net up - ' + settings.botUser)
+  return
 
 
 

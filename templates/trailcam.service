@@ -4,7 +4,7 @@ After=multi-user.target
 
 [Service]
 Type=idle
-ExecStart=/usr/bin/python3 /home/pi/Trailcam/trailcam.py -t False -s True > /home/pi/Trailcam/log.txt
+ExecStart=/usr/bin/python3 -u /home/pi/Trailcam/trailcam.py -t False -s True
 User=pi
 Group=pi
 KillSignal=SIGINT
