@@ -37,9 +37,12 @@ def processMessage(message, threadid):
 # main process
 def main():
   # bc.powerChange(0, 'up')
-
-  while not util.is_online():
+  
+  netUp = False
+  while not netUp:
+      netUp = util.is_online()
       print('Net down.')
+      time.sleep(1)
   print('Net up.')
 
   # Setup settings
