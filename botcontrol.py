@@ -10,7 +10,8 @@ import utilities as util
 def processChat(chat):
   if (
     chat['type'] == 'message' and 
-    'subtype' not in chat
+    'subtype' not in chat and 
+    'upload' not in chat
   ):
     processMessage(chat['text'], chat['ts'])
 

@@ -64,7 +64,7 @@ def takeStillCommand(threadid):
       time.sleep(2)
       cam.capture(recordStill, use_video_port=False)
       cam.stop_preview()
-  postSlackStill(recordStill, output_basefilename + '.jpg', output_basefilename + '.jpg', 'Still - ' + output_basefilename + '.jpg')
+  postSlackStill(recordStill, output_basefilename + '.jpg', output_basefilename + '.jpg', 'Still - ' + output_basefilename + '.jpg', threadid)
   os.remove(recordStill)
   return
 
@@ -99,11 +99,12 @@ def threadedCommand(piCommand):
   return
 
 # Posts the still to slack
-def postSlackStill(input_still, input_filename, input_title, input_comment):
+def postSlackStill(input_still, input_filename, input_title, input_comment, threadid = None):
   with open(input_still, 'rb') as f:
     ret = utilities.sc.api_call(
         "files.upload",
         channels=settings.slackChannel2,
+        thread_ts=threadid,
         filename=input_filename,
         initial_comment=input_comment,
         title=input_title,
