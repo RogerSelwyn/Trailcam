@@ -80,7 +80,7 @@ def threadedStoreVideos():
                   if os.path.isfile(file_path):
                       storeIndividualVideo(file_path, the_file[:-5])
               except Exception as e:
-                  logMessage(e)
+                  logMessage(str(e))
     storeThread = False
     logMessage('Subprocess stopped')
     return
@@ -100,8 +100,11 @@ def storeIndividualVideo(input_video, output_basefilename):
         postSlackVideo(output_video, output_filename, output_filename, "Hedgehog")
     elif not settings.testmode:
         ratingKey = plex_ratingKey(output_basefilename)
-        plexURL = 'plex://play/?metadataKey=%2Flibrary%2Fmetadata%2F' + ratingKey + '&metadataType=1&server=' + settings.plexServerKey
-        postSlackMessage('Video uploaded to Plex - <' + plexURL + '|' + output_filename + '>', None, settings.botEmoji, settings.botUser)
+        if ratingKey == None:
+            postSlackMessage('Video uploaded to Plex - ' + output_filename + ' - URL not found', None, settings.botEmoji, settings.botUser)
+        else:
+            plexURL = 'plex://play/?metadataKey=%2Flibrary%2Fmetadata%2F' + ratingKey + '&metadataType=1&server=' + settings.plexServerKey
+            postSlackMessage('Video uploaded to Plex - <' + plexURL + '|' + output_filename + '>', None, settings.botEmoji, settings.botUser)
     return
 
 # Store still in final location
@@ -303,7 +306,7 @@ def plex_ratingKey(video_title):
                 break
 
 # Wait for Network to come up
-def waitForNetUp(botuser):
+def waitForNetUp(botUser):
   netUp = False
   while not netUp:
       netUp = is_online()

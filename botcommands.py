@@ -59,7 +59,7 @@ def takeStillCommand(threadid):
       cam.rotation=settings.camRotation
       cam.resolution=settings.camStillResolution
       cam.annotate_background = picamera.Color('black')
-      cam.shutter_speed = 10000
+ #     cam.shutter_speed = 10000
       cam.start_preview()
       time.sleep(2)
       cam.capture(recordStill, use_video_port=False)

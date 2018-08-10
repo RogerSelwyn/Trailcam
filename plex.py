@@ -13,7 +13,7 @@ if __name__ == '__main__':
     data = response.json()['MediaContainer']['Metadata']
 
     for video in data:
-        if video['title'] == '20180807-104301':
+        if video['title'] == '20180808-214042':
             print(video['ratingKey'])
             break
 
