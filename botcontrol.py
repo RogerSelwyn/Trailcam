@@ -43,6 +43,7 @@ def main():
 
   # Wait for network to come up
   util.waitForNetUp(settings.botUser2)
+  time.sleep(5)
 
   # Setup slack
   util.setupSlack(settings.slackChannel2)

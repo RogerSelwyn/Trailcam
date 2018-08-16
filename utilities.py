@@ -313,7 +313,7 @@ def waitForNetUp(botUser):
       if not netUp:
           print('Net down - ' + botUser)
           time.sleep(1)
-  print('Net up - ' + settings.botUser)
+  print('Net up - ' + botUser)
   return
 
 
