@@ -2,6 +2,10 @@
 
 Trailcam built on Raspberry Pi 3 Model B and Pi NoIR Camera V2
 
+## Notes as at 2021-08-18
+
+My trailcam code has been pushed down to the trailcam folder. This is while I work on a quick project to try and capture some bat motion, which requires a different model of videio capture. So this code is a bit of a hack for pro-active video capture and deletion on footage, as opposed to re-active for the hog-cam.
+
 ## Overview
 
 Configure setup in settings.py, plus any secure configuration in config/config.json

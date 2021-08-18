@@ -4,8 +4,10 @@ __pycache__/
 #Config directory
 config/
 
-#Temporary capture directory
+#Temporary capture directories
 videos/
-
-#Log directory
 trailcam_log/
+output/
+
+#VS Code
+.vscode/
