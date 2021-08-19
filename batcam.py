@@ -19,26 +19,32 @@ class Bat_Cam:
         self.cam.resolution = settings.camResolution
         self.cam.annotate_background = picamera.Color("black")
         self.recordVideo = None
+        self.motionLogged = False
+
         # PIR is on pin 18
         self.pir = MotionSensor(18)
-        self.pir.when_motion = incrementTimer
+        self.pir.when_motion = self.motionDetected
 
         self.cam.start_preview()
         time.sleep(2)
-        print(self.cam.awb_mode)
+        # print(self.cam.awb_mode)
 
     def capture_video(self):
-        global MOTION_LOGGED
-        MOTION_LOGGED = False
+        self.motionLogged = False
         start = datetime.now()
         self.start_capture()
 
-        while (datetime.now() - start).seconds < settings.recordTime:
-            self.cam.annotate_text = settings.camTitle + " " + datetime.now().strftime("%d-%m-%y %H:%M:%S")
-            # time.sleep(2 / 10)
-            self.cam.wait_recording(0.2)
+        try:
+            while (datetime.now() - start).seconds < settings.recordTime:
+                self.cam.annotate_text = settings.camTitle + " " + datetime.now().strftime("%d-%m-%y %H:%M:%S")
+                # time.sleep(2 / 10)
+                self.cam.wait_recording(0.2)
+        except KeyboardInterrupt:
+            _LOGGER.logMessage("Keyboard interupt")
+            self.stop_capture()
+            raise
 
-        self.stop_capture(MOTION_LOGGED)
+        self.stop_capture()
 
     def start_capture(self):
         output_basefilename = "{}".format(datetime.now().strftime("%Y%m%d-%H%M%S"))
@@ -46,22 +52,20 @@ class Bat_Cam:
         _LOGGER.logMessage("Start capture: " + self.recordVideo)
         self.cam.start_recording(self.recordVideo + ".tmp", format="h264")
 
-    def stop_capture(self, MOTION_LOGGED):
+    def stop_capture(self):
         self.cam.stop_recording()
-        if MOTION_LOGGED:
+        if self.motionLogged:
             _LOGGER.logMessage("Stop capture - motion detected: " + self.recordVideo)
             os.rename(self.recordVideo + ".tmp", self.recordVideo)
         else:
             _LOGGER.logMessage("Stop capture - deleted: " + self.recordVideo)
             os.remove(self.recordVideo + ".tmp")
 
-
-# Set the time last motion was seen
-def incrementTimer():
-    global MOTION_LOGGED
-    MOTION_LOGGED = True
-    _LOGGER.logMessage("Motion detected")
-    return
+    # Motion Detected
+    def motionDetected(self):
+        self.motionLogged = True
+        _LOGGER.logMessage("Motion detected")
+        return
 
 
 # Initiate everything
@@ -74,8 +78,6 @@ if __name__ == "__main__":
             batcam.capture_video()
 
     except KeyboardInterrupt:
-        global MOTION_LOGGED
         _LOGGER.logMessage("Stopping camera")
-        batcam.stop_capture(MOTION_LOGGED)
 
     _LOGGER.logMessage("Finishing")
